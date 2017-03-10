@@ -55,3 +55,4 @@ vssver2.scc
 tags
 Makefile.rmf
 a.out
+*.read
