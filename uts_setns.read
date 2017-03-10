@@ -1,0 +1,36 @@
+#--------------------------第一个shell窗口----------------------
+#重用上面创建的namespace container001
+#先确认一下hostname是否正确，
+root@container001:~/code# hostname
+container001
+
+#获取bash的PID
+root@container001:~/code# echo $$
+27334
+
+#得到bash所属的UTS namespace
+root@container001:~/code# readlink /proc/27334/ns/uts
+uts:[4026532445]
+
+
+
+#--------------------------第二个shell窗口----------------------
+#重新打开一个shell窗口，将上面的代码保存为文件namespace_join.c并编译
+dev@ubuntu:~/code$ gcc namespace_join.c -o namespace_join
+
+#运行程序前，确认下当前bash不属于namespace container001
+dev@ubuntu:~/code$ hostname
+ubuntu
+dev@ubuntu:~/code$ readlink /proc/$$/ns/uts
+uts:[4026531838]
+
+#执行程序，使其加入第一个shell窗口中的bash所在的namespace
+#27334是第一个shell窗口中bash的pid
+dev@ubuntu:~/code$ sudo ./namespace_join /proc/27334/ns/uts
+root@container001:~/code#
+
+#加入成功，bash提示符里面的hostname以及UTS namespace的inode number和第一个shell窗口的都一样
+root@container001:~/code# hostname
+container001
+root@container001:~/code# readlink /proc/$$/ns/uts
+uts:[4026532445]
