@@ -1,0 +1,27 @@
+#将上面的代码保存为文件namespace_leave.c并编译
+dev@ubuntu:~/code$ gcc namespace_leave.c -o namespace_leave
+
+#查看当前bash所属的UTS namespace
+dev@ubuntu:~/code$ readlink /proc/$$/ns/uts
+uts:[4026531838]
+
+#执行程序， -u表示退出并加入新的UTS namespace
+dev@ubuntu:~/code$ sudo ./namespace_leave -u
+root@ubuntu:~/code#
+
+#再次查看UTS namespace，已经变了，说明已经离开原来的namespace并加入了新的namespace
+#细心的同学可能已经发现这里的inode number刚好和上面namespace container002的相同，
+#这说明在container002被销毁后，inode number被回收再利用了
+root@ubuntu:~/code# readlink /proc/$$/ns/uts
+uts:[4026532455]
+
+#反复执行几次，得到类似的结果
+root@ubuntu:~/code# ./namespace_leave -u
+root@ubuntu:~/code# readlink /proc/$$/ns/uts
+uts:[4026532456]
+root@ubuntu:~/code# ./namespace_leave -u
+root@ubuntu:~/code# readlink /proc/$$/ns/uts
+uts:[4026532457]
+root@ubuntu:~/code# ./namespace_leave -u
+root@ubuntu:~/code# readlink /proc/$$/ns/uts
+uts:[4026532458]
